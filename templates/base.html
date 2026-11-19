@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}猪头王第一届积分锦标赛{% endblock %}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #ffffff; font-family: 'Microsoft YaHei', Arial, sans-serif; color: #333333; line-height: 1.6; }
+        a { color: #0056b3; text-decoration: none; transition: 0.2s; }
+        a:hover { color: #003d82; text-decoration: underline; }
+        
+        .content { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        #header { background-color: #ffffff; padding: 20px 0 10px 0; border-bottom: 1px solid #e0e0e0; }
+
+        .header-inner { display: flex; justify-content: space-between; align-items: center; gap: 40px; }
+        .header-text { flex: 1; }
+
+        h1 { font-size: 46px; font-weight: bold; color: #111; margin-bottom: 20px; white-space: nowrap; }
+        h1 span { display: block; font-size: 16px; color: #666; letter-spacing: 3px; margin-bottom: 5px; }
+
+        #menu ul { list-style: none; display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        #menu ul li a { display: inline-block; padding: 8px 16px; font-size: 16px; color: #555; border-radius: 4px; white-space: nowrap; }
+        #menu ul li.selected a, #menu ul li a:hover { background: #e9ecef; color: #111; }
+
+        .header-img { width: 160px; height: 160px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.15); border: 4px solid #fff; background-image: url('/static/1.png'); background-size: cover; background-position: center; background-repeat: no-repeat; margin-right: 40px; flex-shrink: 0; }
+
+        .main-layout { margin-top: 30px; margin-bottom: 60px; }
+        .post-card { background: #fff; padding: 25px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #e0e0e0; border-left: 5px solid #0056b3; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .post-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-2px); }
+        .post-card h3 { font-size: 20px; color: #111; margin-bottom: 10px; }
+        .post-card p { color: #666; font-size: 16px; line-height: 1.8; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+
+    {% macro render_posts(posts) %}
+        {% for post in posts %}
+            {% if post[1] %}
+                <div class="post-card">
+                    <h3>{{ post[1] }}</h3>
+                    <p>{{ post[2] }}</p>
+                </div>
+            {% else %}
+                <div style="padding: 15px 0; line-height: 1.8; color: #444; white-space: pre-wrap;">{%- if post[2] -%}{{ post[2] }}{%- endif -%}</div>
+            {% endif %}
+        {% endfor %}
+        {% if not posts %}
+            <p style="color: #97b6d3; font-style: italic; text-align: center;">暂无内容。</p>
+        {% endif %}
+    {% endmacro %}
+
+    <div id="header">
+        <div class="content header-inner">
+            <div class="header-text">
+                <h1><a href="/"><span>PIG KING</span>猪头王第一届积分锦标赛</a></h1>
+                <div id="menu">
+                    <ul>
+                        <li class="{% if request.path == '/' %}selected{% endif %}"><a href="/">主页</a></li>
+                        <li class="{% if request.path == '/detail' %}selected{% endif %}"><a href="/detail">赛事详情</a></li>
+                        <li class="{% if request.path == '/schedule' %}selected{% endif %}"><a href="/schedule">比赛安排</a></li>
+                        <li class="{% if request.path == '/rankings' %}selected{% endif %}"><a href="/rankings">积分排名</a></li>
+                        <li class="{% if request.path == '/history' %}selected{% endif %}"><a href="/history">比赛记录</a></li>
+                        <li class="{% if request.path == '/contact' %}selected{% endif %}"><a href="/contact" ondblclick="window.location.href='/admin'">联系主办方</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="header-img"></div>
+        </div>
+    </div>
+
+    <div class="content main-layout">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- 悬浮 AI 聊天按钮 -->
+    <div id="ai-btn" style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #0056b3; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 9999; transition: 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">🤖</div>
+
+    <!-- 悬浮聊天窗口 -->
+    <div id="ai-box" style="display: none; position: fixed; bottom: 100px; right: 30px; width: 350px; height: 450px; background: #ffffff; border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); z-index: 9999; flex-direction: column; overflow: hidden; border: 1px solid #ddd;">
+        <div style="background: #0056b3; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+            <span>猪头王 AI 助手</span>
+            <span style="cursor: pointer; font-size: 18px;" onclick="document.getElementById('ai-box').style.display='none'">×</span>
+        </div>
+        <div id="ai-messages" style="flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f9f9f9;">
+            <div style="background: #e9ecef; padding: 10px 15px; border-radius: 8px; align-self: flex-start; max-width: 80%; font-size: 14px;">你好！我是本站 AI 助手，有什么可以帮你的？</div>
+        </div>
+        <div style="display: flex; border-top: 1px solid #ddd; padding: 10px; background: #fff;">
+            <input id="ai-input" type="text" placeholder="输入你想问的问题..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 14px;">
+            <button id="ai-send" style="margin-left: 10px; padding: 0 20px; background: #0056b3; color: white; border: none; border-radius: 20px; cursor: pointer;">发送</button>
+        </div>
+    </div>
+
+    <script>
+        const aiBtn = document.getElementById('ai-btn');
+        const aiBox = document.getElementById('ai-box');
+        const sendBtn = document.getElementById('ai-send');
+        const input = document.getElementById('ai-input');
+        const messages = document.getElementById('ai-messages');
+
+        // 点击右下角图标切换窗口
+        aiBtn.onclick = () => {
+            aiBox.style.display = aiBox.style.display === 'flex' ? 'none' : 'flex';
+        };
+
+        async function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            // 显示用户消息
+            messages.innerHTML += `<div style="background: #0056b3; color: white; padding: 10px 15px; border-radius: 8px; align-self: flex-end; max-width: 80%; font-size: 14px;">${text}</div>`;
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+
+            // 显示加载中
+            const loadingId = 'loading-' + Date.now();
+            messages.innerHTML += `<div id="${loadingId}" style="background: #e9ecef; padding: 10px 15px; border-radius: 8px; align-self: flex-start; font-size: 14px;">正在思考中...</div>`;
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+
+                // 移除加载中，显示真实回复
+                document.getElementById(loadingId).remove();
+                messages.innerHTML += `<div style="background: #e9ecef; padding: 10px 15px; border-radius: 8px; align-self: flex-start; max-width: 80%; font-size: 14px;">${data.reply}</div>`;
+                messages.scrollTop = messages.scrollHeight;
+            } catch (err) {
+                document.getElementById(loadingId).innerText = '网络错误，请稍后再试';
+            }
+        }
+
+        sendBtn.onclick = sendMessage;
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+    </script>
+</body>
+</html>
